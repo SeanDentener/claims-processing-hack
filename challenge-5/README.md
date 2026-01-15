@@ -4,16 +4,28 @@
 
 ## Introduction
 
-Welcome to Challenge 5! In this challenge, you'll build a user-friendly web interface using **Streamlit** to consume the Claims Processing API you deployed in Challenge 4. This UI will allow users to upload insurance claim images and view the structured results extracted by the multi-agent workflow—completing the end-to-end claims processing solution.
+Welcome to Challenge 5! In this challenge, you'll build a user-friendly web interface using **Streamlit** to consume the Claims Processing REST API you deployed in Challenge 4. This UI will allow users to upload insurance claim images and view the structured results extracted by the multi-agent workflow—completing the end-to-end claims processing solution.
+
+### MCP vs REST API: When to Use Each
+
+In Challenge 4, you deployed your claims processing workflow with both **MCP (Model Context Protocol)** and **REST API** endpoints. Understanding when to use each is important:
+
+| Approach | Best For | Examples |
+|----------|----------|----------|
+| **MCP Server** | AI assistants and agents that need to discover and invoke tools dynamically | GitHub Copilot, Claude Desktop, ChatGPT plugins, AI coding agents |
+| **REST API** | Traditional applications, web UIs, mobile apps, and programmatic integrations | Streamlit apps, React frontends, mobile apps, backend services |
+
+**MCP** is designed for AI-to-tool communication—it allows AI assistants to discover available tools, understand their parameters, and invoke them through a standardized protocol. **REST APIs** are the standard for application-to-application communication, providing predictable endpoints that any HTTP client can consume.
+
+For this challenge, we use the **REST API** since we're building a traditional web interface, not an AI assistant.
 
 ## What are we building?
 
 In this challenge, you will create:
 
 - **Streamlit Web App**: A simple, interactive UI for uploading and processing claim images
-- **API Integration**: Connect to the Challenge 4 REST API to process claims
+- **REST API Integration**: Connect to the Challenge 4 REST API to process claims
 - **Results Display**: Parse and display structured claim data (vehicle info, damage assessment, incident details)
-- **Session History**: Track all processed claims during your session
 
 ## Architecture
 
@@ -26,14 +38,9 @@ In this challenge, you will create:
                │ HTTP REST API
                │
 ┌──────────────▼───────────────────┐
-│   Azure API Management (APIM)    │
-│      MCP Server Endpoint         │
-│  https://<apim>.azure-api.net/...│
-└──────────────┬───────────────────┘
-               │
-┌──────────────▼───────────────────┐
 │     Claims Processing API        │
 │     Azure Container Apps         │
+│  /health, /process-claim/upload  │
 └──────────────────────────────────┘
 ```
 
@@ -42,29 +49,28 @@ In this challenge, you will create:
 ### 1. Install Dependencies
 
 ```bash
-cd challenge-5-ui
+cd challenge-5
 pip install -r requirements.txt
 ```
 
-### 2. Get your MCP Server URL from Challenge 4
+### 2. Get your API URL from Challenge 4
 
-Use the **MCP Server URL** created in Challenge 4 Task 6.4 through Azure API Management:
+Use the **Container Apps URL** from your Challenge 4 deployment:
 
 ```bash
-# Your MCP Server URL should look like:
-# https://<your-apim-name>.azure-api.net/<api-path>
+# Your API URL should look like:
+# https://<your-app-name>.<environment>.<region>.azurecontainerapps.io
 ```
 
-You can find this URL in the Azure Portal:
-1. Go to **API Management** → Your APIM instance
-2. Navigate to **MCPs** section
-3. Copy the **MCP Server URL**
+You can find this URL:
+1. In the Azure Portal → **Container Apps** → Your app → **Overview** → **Application Url**
+2. Or from the deployment output in Challenge 4
 
 ### 3. Start the Streamlit UI
 
 ```bash
-cd challenge-5-ui
-API_URL=https://<your-apim-name>.azure-api.net/<api-path> streamlit run app.py
+cd challenge-5
+API_URL=https://<your-container-app-url> streamlit run app.py
 ```
 
 Or configure the API URL in the sidebar after launching:
@@ -79,29 +85,25 @@ Navigate to http://localhost:8501
 
 ## Usage
 
-1. **Configure API URL**: In the sidebar, paste your MCP Server URL from APIM
-2. **Check Health**: Click "Check API Health" to verify connectivity
+1. **Configure API URL**: In the sidebar, enter your Container Apps API URL
+2. **Check Health**: Click "Check Health" to verify connectivity
 3. **Upload Image**: Use the file uploader to select a claim image
 4. **Process**: Click "Process Claim" to send the image to the API
 5. **View Results**: See the structured claim data displayed in a user-friendly format
 
-## UI Tabs
+## UI Features
 
 ### 📤 Upload Claim
-- File uploader for claim images
+- File uploader for claim images (JPG, JPEG, PNG)
 - Preview of uploaded image
-- Choice of processing method (file upload vs base64)
+- One-click claim processing
 - Results display with structured data
 
-### 📊 Results History
-- View all previously processed claims
-- Each result can be expanded for details
-- Clear history option
-
-### 🔧 Debug
-- Session state inspection
-- Last result viewer
-- Manual API testing tool
+### 📋 Results Display
+- Vehicle information (make, model, color, year)
+- Damage assessment (severity, estimated cost, affected areas)
+- Incident details (date, location, description)
+- Raw JSON expandable view
 
 ## Configuration
 

@@ -290,7 +290,7 @@ Provide a summary of what text was found and what it represents."""
             
             response = openai_client.responses.create(
                 input=user_query,
-                extra_body={"agent": {"name": agent.name, "type": "agent_reference"}},
+                extra_body={"agent_reference": {"name": agent.name, "type": "agent_reference"}},
             )
             
             print(f"Response output: {response.output_text}")

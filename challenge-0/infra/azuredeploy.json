@@ -281,14 +281,18 @@
       "apiVersion": "2025-06-01",
       "name": "[format('{0}/{1}', variables('aiFoundryName'), 'text-embedding-ada-002')]",
       "sku": {
-        "capacity": 200,
+        "capacity": 120,
         "name": "GlobalStandard"
       },
       "properties": {
         "model": {
           "name": "text-embedding-ada-002",
-          "format": "OpenAI"
-        }
+          "format": "OpenAI",
+          "version": "2"
+        },
+        "versionUpgradeOption": "NoAutoUpgrade",
+        "currentCapacity": 120,
+        "raiPolicyName": "Microsoft.DefaultV2"
       },
       "dependsOn": [
         "[resourceId('Microsoft.CognitiveServices/accounts', variables('aiFoundryName'))]",
